@@ -2,11 +2,7 @@
 
 > The board-game first-player ritual. Everyone places a finger. One is chosen.
 
-![ALTAR preview](altar-preview.png)
-
-**[▶ Open live demo](XXXXXXXXXXXX)**
-
----
+![altar](https://github.com/user-attachments/assets/5214cc3b-cde6-412a-bdfc-c8d860eab615)
 
 ## What it is
 
