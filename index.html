@@ -62,10 +62,8 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%23020810'/><text x='50%25' y='54%25' font-size='340' text-anchor='middle' dominant-baseline='middle' fill='%2300ff41'>▲</text></svg>">
 
 <!-- ── OPEN GRAPH & TWITTER CARD ─────────────────────────── -->
-<!-- Replace XXXXXXXXXXXX with your live URL before publishing. -->
-<!-- Replace altar-preview.png with an actual screenshot.       -->
 <meta property="og:type"        content="website">
-<meta property="og:url"         content="https://i.imgur.com">
+<meta property="og:url"         content="https://oefi.github.io/Finger_Altar/">
 <meta property="og:title"       content="ALTAR — Who Goes First?">
 <meta property="og:description" content="The board-game first-player ritual. Everyone places a finger. One is chosen. Single-file web app — no install needed.">
 <meta property="og:image"       content="https://i.imgur.com/tRcdq1Y.png">
@@ -660,16 +658,36 @@ body::after {
 
 /* ── REDUCED MOTION ─── */
 /* Respects OS "Reduce Motion" accessibility setting.
-   Kills decorative animations; keeps functional ones (timer, winner pulse).
-   Ghost screensaver is disabled via JS (see reducedMotion flag).           */
+   POLICY:
+   - Functional UI elements (radar, ghosts) stay VISIBLE — just static.
+     Ghosts teach the UI; radar sets the aesthetic. Hiding them breaks UX.
+   - Purely decorative animations (logo glow, edge-hint breathe, ring pulses,
+     win-title glow) are killed entirely.
+   - Winner throb is reduced to a static scale — removed entirely would
+     lose the "this finger won" feedback.                                  */
 @media (prefers-reduced-motion: reduce) {
-  #radar-sweep          { animation: none; }
+  /* Radar: stop rotating but keep visible as static background element */
+  #radar-sweep          { animation: none; opacity: .07; }
   #radar-center         { animation: none; opacity: .75; }
+
+  /* Logo: kill glow pulse, keep visible */
   #logo-sym             { animation: none; opacity: .7; }
+
+  /* Edge hints: kill breathe, show at fixed opacity */
   .edge-hint            { animation: none; opacity: .3; }
+
+  /* Ghost fingerprints: kill fade-in/breathe animations — they appear
+     at a fixed opacity instead. The JS still spawns them. */
+  .fp-ghost             { opacity: .35 !important; }
+
+  /* Live fingerprint: kill glow pulse and sonar ring expansion */
   .fp-live.active svg   { animation: none; }
   .fp-live.active .fp-ring { animation: none; opacity: 0; }
+
+  /* Winner overlay title: kill glow */
   #w-title              { animation: none; }
+
+  /* Winner throb: static scale — removes motion but keeps visual feedback */
   @keyframes win-throb  { 0%,100% { transform: scale(1.6); } }
 }
 </style>
@@ -868,7 +886,8 @@ let mDown     = false;   // mouse button held (desktop testing only)
 let soundEnabled  = true;  // toggled by #snd-btn; gates all Web Audio output
 
 // reducedMotion: read once from the OS accessibility preference.
-// When true: JS suppresses ghost spawning. CSS media query kills CSS animations.
+// When true: CSS kills decorative animations (radar spin, pulses, glow).
+// Ghosts and radar are still rendered — just static. They are UI, not decoration.
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // soundToastShown: one-shot flag — the "🔊 SOUND ON" toast fires exactly once per page load.
@@ -1029,8 +1048,10 @@ class Ghost {
 }
 
 function spawnGhosts(n){
-  // Ghosts are decorative — skip entirely for users who want reduced motion
-  if (reducedMotion) return;
+  // Ghosts teach players what to do — they are a UI affordance, not decoration.
+  // We always spawn them. reducedMotion suppresses their CSS animations (fade,
+  // breathe, ring-pop) via the @media block, but the fingerprints themselves
+  // must appear so players know to place their fingers on the screen.
   for(let i=0;i<n;i++) ghosts.push(new Ghost());
 }
 function clearGhosts() { ghosts.forEach(g=>g.remove()); ghosts=[]; }
