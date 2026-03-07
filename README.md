@@ -65,14 +65,6 @@ Web Audio API (synthesized oscillators) · Touch Events API · CSS custom proper
 
 ## Development
 
-No build toolchain. Open the file. Edit the file. Reload.
-
-```bash
-# Serve locally if you need it
-npx serve .
-# or
-python3 -m http.server
-```
 
 All constants (timer duration, winner display time, player colors) are at the top of the `<script>` block.
 
@@ -81,17 +73,11 @@ All constants (timer duration, winner display time, player colors) are at the to
 ## Repo structure
 
 ```
-altar.html          ← the entire app
-altar-preview.png   ← OG image / README screenshot
+index.html
 README.md
 LICENSE
-docs/
-  changelog.md
-  workflow-prompts.md
-```
-
 ---
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+MIT
