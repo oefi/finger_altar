@@ -18,7 +18,7 @@ Takes about 15 seconds. Creates about 15 seconds of genuine tension.
 ## How to use
 
 1. Open `index.html` in any mobile browser  
-   — or use the [live demo](https://oefi.github.io/Finger_Altar/)
+   — or use the [live demo](https://oefi.github.io/finger_altar/)
 2. Tap **Add to Home Screen** for true fullscreen (recommended)
 3. Lay the device flat on the table
 4. Everyone places a finger
