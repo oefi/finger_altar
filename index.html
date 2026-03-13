@@ -1,7 +1,7 @@
 <!--
   ╔══════════════════════════════════════════════════════════════╗
-  ║  ALTAR — Who Goes First?                                     ║
-  ║  v1.0.0 — board-game first-player selector                   ║
+  ║  Fingersweep — Who Goes First?                               ║
+  ║  v1.1.0 — board-game first-player selector                   ║
   ║                                                              ║
   ║  Single-file. Zero dependencies. Works offline after load.   ║
   ║  Designed for phones & tablets laid flat on a game table.    ║
@@ -48,8 +48,8 @@
      file. Enables "Add to Home Screen" with app name, fullscreen
      display mode, and a dark splash screen on Android / iOS.    -->
 <link rel="manifest" href="data:application/manifest+json,{
-  %22name%22:%22ALTAR%20%E2%80%94%20Who%20Goes%20First%22,
-  %22short_name%22:%22ALTAR%22,
+  %22name%22:%22Fingersweep%20%E2%80%94%20Who%20Goes%20First%22,
+  %22short_name%22:%22FINGERSWEEP%22,
   %22description%22:%22Board-game%20first-player%20selector%22,
   %22display%22:%22fullscreen%22,
   %22orientation%22:%22any%22,
@@ -63,16 +63,16 @@
 
 <!-- ── OPEN GRAPH & TWITTER CARD ─────────────────────────── -->
 <meta property="og:type"        content="website">
-<meta property="og:url"         content="https://oefi.github.io/Finger_Altar/">
-<meta property="og:title"       content="ALTAR — Who Goes First?">
+<meta property="og:url"         content="https://fingersweep.app/">
+<meta property="og:title"       content="Fingersweep — Who Goes First?">
 <meta property="og:description" content="The board-game first-player ritual. Everyone places a finger. One is chosen. Single-file web app — no install needed.">
 <meta property="og:image"       content="https://i.imgur.com/tRcdq1Y.png">
 <meta name="twitter:card"       content="summary_large_image">
-<meta name="twitter:title"      content="ALTAR — Who Goes First?">
+<meta name="twitter:title"      content="Fingersweep — Who Goes First?">
 <meta name="twitter:description"content="The board-game first-player ritual. Everyone places a finger. One is chosen.">
 <meta name="twitter:image"      content="https://i.imgur.com/tRcdq1Y.png">
 
-<title>ALTAR — Who Goes First?</title>
+<title>Fingersweep — Who Goes First?</title>
 
 <!-- ── FONTS (inlined woff2 — zero external requests) ──────── -->
 <style>
@@ -195,6 +195,14 @@ body::after {
   border-radius: 50%; overflow: hidden;
   pointer-events: none;
   opacity: 1; transition: opacity 1.2s;
+  /* Promote to its own compositor layer so the child animation
+     isn't dropped on iOS/Android when the element is large.      */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* iOS Safari: force border-radius clipping to apply to
+     composited children (otherwise overflow:hidden is ignored).  */
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
 }
 #radar-wrap.hidden { opacity: 0; }
 #radar-sweep {
@@ -206,8 +214,16 @@ body::after {
     rgba(0,255,65,.05) 20deg,
     transparent 30deg
   );
+  /* will-change tells the browser to keep this on the GPU —
+     without it, large animated elements are often skipped on
+     mobile to save power.                                        */
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   animation: sweep 4.5s linear infinite;
+  -webkit-animation: sweep 4.5s linear infinite;
 }
+@-webkit-keyframes sweep { to { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
 @keyframes sweep { to { transform: rotate(360deg); } }
 
 #radar-center {
@@ -247,8 +263,9 @@ body::after {
 }
 #logo-title {
   font-family: var(--font-t);
-  font-size: clamp(3rem, 11vw, 7rem);
-  letter-spacing: .25em; line-height: 1;
+  font-size: clamp(1.8rem, 6.5vw, 5.5rem);
+  letter-spacing: .1em; line-height: 1;
+  white-space: nowrap;
   text-shadow: 0 0 25px rgba(0,255,65,.22);
 }
 
@@ -490,7 +507,7 @@ body::after {
   opacity: 0; transition: opacity .55s;
   padding-top: calc(var(--st) + 8px);
 }
-#winner-overlay.show  { opacity: 1; pointer-events: auto; }
+#winner-overlay.show  { opacity: 1; pointer-events: none; }  /* pass touches to #touch-layer */
 /* .flip: overlay moves to bottom half; safe-area padding flips to bottom */
 #winner-overlay.flip  {
   top: auto; bottom: 0;
@@ -525,7 +542,7 @@ body::after {
 }
 
 /* ── PLAY AGAIN BUTTON — winner screen ─── */
-/* Visible, tappable, styled to match the ALTAR language.
+/* Visible, tappable, styled to match the Fingersweep visual language.
    Clears the auto-reset timeout so it doesn't race.     */
 #w-again {
   margin-top: .9rem;
@@ -538,6 +555,7 @@ body::after {
   border: 1px solid rgba(0,255,65,.35);
   border-radius: 20px;
   cursor: pointer;
+  pointer-events: auto;  /* re-enable: parent overlay is pointer-events:none */
   -webkit-tap-highlight-color: transparent;
   transition: background .2s, opacity .2s;
   opacity: .7;
@@ -640,7 +658,7 @@ body::after {
     --ring-sz: 104px; --ring-half: 52px;
   }
   #logo { top: calc(var(--st) + 7%); }
-  #logo-title { font-size: clamp(2.8rem, 14vw, 5.5rem); }
+  #logo-title { font-size: clamp(1.5rem, 8.5vw, 4rem); }
   #hint-l, #hint-r { display: none; }
 }
 
@@ -652,7 +670,7 @@ body::after {
     --ring-sz: 118px; --ring-half: 59px;
   }
   #logo { top: calc(var(--st) + 5%); }
-  #logo-title { font-size: clamp(2.2rem, 8vw, 6rem); }
+  #logo-title { font-size: clamp(1.4rem, 6vw, 5rem); }
   #winner-overlay { height: 52%; }
 }
 
@@ -663,7 +681,7 @@ body::after {
     --fp-hw:  38px;  --fp-hh:  45px;
     --ring-sz: 94px; --ring-half: 47px;
   }
-  #logo-title { font-size: 2.5rem; }
+  #logo-title { font-size: clamp(1.3rem, 7.5vw, 2.2rem); letter-spacing: .06em; }
   .fp-num { font-size: .45rem; top: -20px; }
 }
 
@@ -685,7 +703,7 @@ html[data-device="phone"] {
   --ring-sz: 134px; --ring-half: 67px;
 }
 html[data-device="phone"] #logo-title {
-  font-size: clamp(2.8rem, 16vw, 5rem);
+  font-size: clamp(1.5rem, 8.5vw, 3.5rem);
 }
 
 /* Phone + portrait: keep the larger phone values (override the
@@ -697,6 +715,7 @@ html[data-device="phone"] body:has(*)  { /* anchor for specificity */ }
     --fp-hw:  55px;  --fp-hh:  66px;
     --ring-sz: 134px; --ring-half: 67px;
   }
+  html[data-device="phone"] #logo-title { font-size: clamp(1.5rem, 8.5vw, 3.5rem); }
 }
 
 /* Phone + landscape: slight reduction — landscape has more room */
@@ -706,6 +725,7 @@ html[data-device="phone"] body:has(*)  { /* anchor for specificity */ }
     --fp-hw:  50px;  --fp-hh:  60px;
     --ring-sz: 124px; --ring-half: 62px;
   }
+  html[data-device="phone"] #logo-title { font-size: clamp(1.4rem, 6vw, 3.5rem); }
 }
 
 /* Small phone + portrait: cap at 92px — very tight screens */
@@ -729,7 +749,7 @@ html[data-device="phone"] body:has(*)  { /* anchor for specificity */ }
      lose the "this finger won" feedback.                                  */
 @media (prefers-reduced-motion: reduce) {
   /* Radar: stop rotating but keep visible as static background element */
-  #radar-sweep          { animation: none; opacity: .07; }
+  #radar-sweep          { animation: none; -webkit-animation: none; opacity: .07; }
   #radar-center         { animation: none; opacity: .75; }
 
   /* Logo: kill glow pulse, keep visible */
@@ -773,7 +793,7 @@ html[data-device="phone"] body:has(*)  { /* anchor for specificity */ }
        touch zone. Dims (.dim) once collecting starts. -->
   <div id="logo">
     <span id="logo-sym">▲</span>
-    <div id="logo-title">ALTAR</div>
+    <div id="logo-title">FINGERSWEEP</div>
   </div>
 
   <!-- ── EDGE HINTS ─────────────────────────────────────────
@@ -1078,10 +1098,20 @@ function fpSVG() {
 class Ghost {
   constructor() {
     const W=window.innerWidth, H=window.innerHeight;
-    this.x   = 40+Math.random()*(W-80);
-    this.y   = 40+Math.random()*(H-80);
+    // Read the actual fingerprint half-dims from CSS vars so spawn + bounce
+    // margins always keep the full fingerprint visible on every device/orientation.
+    const cs    = getComputedStyle(document.documentElement);
+    const padX  = (parseFloat(cs.getPropertyValue('--fp-hw')) || 55) + 12;
+    const padY  = (parseFloat(cs.getPropertyValue('--fp-hh')) || 66) + 12;
+    this.padX = padX; this.padY = padY;
+    this.x   = padX + Math.random()*(W - 2*padX);
+    this.y   = padY + Math.random()*(H - 2*padY);
     this.vx  = (Math.random()-.5)*.19;
     this.vy  = (Math.random()-.5)*.19;
+    // Guarantee a visible drift — values near 0 produce ghosts that look frozen.
+    const minSpd=0.055;
+    if(Math.abs(this.vx)<minSpd) this.vx=this.vx<0?-minSpd:minSpd;
+    if(Math.abs(this.vy)<minSpd) this.vy=this.vy<0?-minSpd:minSpd;
     this.op  = 0; this.phase='in'; this.pt=0;
     this.tIn = 650+Math.random()*500;
     this.tHold=2400+Math.random()*3200;
@@ -1099,14 +1129,17 @@ class Ghost {
     if (now<this.born) return;
     const W=window.innerWidth, H=window.innerHeight;
     this.x+=this.vx*dt; this.y+=this.vy*dt;
-    if(this.x<35){this.x=35;this.vx*=-1;}
-    if(this.x>W-35){this.x=W-35;this.vx*=-1;}
-    if(this.y<35){this.y=35;this.vy*=-1;}
-    if(this.y>H-35){this.y=H-35;this.vy*=-1;}
+    const px=this.padX, py=this.padY;
+    if(this.x<px){this.x=px;this.vx*=-1;}
+    if(this.x>W-px){this.x=W-px;this.vx*=-1;}
+    if(this.y<py){this.y=py;this.vy*=-1;}
+    if(this.y>H-py){this.y=H-py;this.vy*=-1;}
     this.pt+=dt;
     if(this.phase==='in'){
-      this.op=Math.min(1,this.pt/this.tIn);
-      if(!this.pinged&&this.op>.12){
+      // Fade to 0.5 — mid-point of hold range [0.35–0.57] — to avoid
+      // a hard brightness-pop at the in→hold transition.
+      this.op=Math.min(0.5,this.pt/this.tIn*0.5);
+      if(!this.pinged&&this.op>.06){
         this.pinged=true; pingGhost();
         const r=document.createElement('div');
         r.className='fp-ring pop'; r.style.color=this.color;
@@ -1115,9 +1148,13 @@ class Ghost {
       if(this.pt>=this.tIn){this.phase='hold';this.pt=0;}
     } else if(this.phase==='hold'){
       this.op=.46+.11*Math.sin(now*.0018+this.x*.04);
-      if(this.pt>=this.tHold){this.phase='out';this.pt=0;}
+      if(this.pt>=this.tHold){
+        // Snapshot current opacity so the out-phase starts from exactly
+        // where hold ended — prevents a visible pop if hold stops mid-breath.
+        this.opFadeOut=this.op; this.phase='out';this.pt=0;
+      }
     } else if(this.phase==='out'){
-      this.op=Math.max(0,.5*(1-this.pt/this.tOut));
+      this.op=Math.max(0,this.opFadeOut*(1-this.pt/this.tOut));
       if(this.pt>=this.tOut) this.phase='dead';
     }
     this.el.style.opacity=this.op;
@@ -1206,7 +1243,9 @@ function resetTimer(){ timerLeft=TIMER_MS; timerLast=performance.now(); setTimer
 function stopTimer() { timerOn=false; $timerSVG.classList.remove('visible'); setTimer(1); $timerRect.classList.remove('warn','crit'); }
 function tickTimer(now){
   if(!timerOn) return;
-  const dt=now-timerLast; timerLast=now;
+  // Clamp to 50 ms — same guard as the RAF loop — so a single-frame
+  // CPU stall (GC, layout thrash) can't drain an outsized chunk.
+  const dt=Math.min(now-timerLast,50); timerLast=now;
   timerLeft=Math.max(0,timerLeft-dt);
   setTimer(timerLeft/TIMER_MS);
   if(timerLeft<=0){ timerOn=false; lockIn(); }
@@ -1331,7 +1370,10 @@ function runSelection(){
   let step=0, prev=-1;
   function tick(){
     if(step>=seq.length){
-      if(prev>=0) fingers.get(ids[prev])?.el.classList.remove('sel-hi');
+      if(prev>=0){
+        const lastEl=fingers.get(ids[prev])?.el;
+        if(lastEl){ lastEl.classList.remove('sel-hi'); lastEl.style.filter=''; }
+      }
       setTimeout(()=>enterWinner(wid),300);
       return;
     }
@@ -1441,19 +1483,50 @@ $fsBtn.addEventListener('click', async e=>{
 });
 
 /* ── VISIBILITY CHANGE ─── */
-// When the browser backgrounds (phone call, notification, tab switch),
-// pause the countdown so it doesn't fire while no one is watching.
-// On return, reset timerLast so the delta-time calculation doesn't
-// see a huge gap and instantly drain the remaining timer.
+// When the browser backgrounds (phone call, notification, tab switch):
+//  - During 'collecting': wipe all active fingers and reset to screensaver.
+//    Touch IDs are invalidated by the OS interrupt — fingers are gone for good.
+//    Leaving orphaned finger divs would freeze the UI on return.
+//  - On return while collecting: re-anchor timerLast so the elapsed wall-clock
+//    time doesn't count against the players.
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
-    // Pause: simply stop ticking. timerLeft retains its value.
     timerOn = false;
+    if (STATE === 'collecting' || STATE === 'locked' || STATE === 'selecting') {
+      enterScreensaver();
+    }
   } else if (STATE === 'collecting' && fingers.size > 0) {
-    // Resume: re-anchor timerLast to now so the missed wall-clock
-    // time doesn't count against the players.
     timerLast = performance.now();
     timerOn   = true;
+  }
+});
+
+/* ── POINTER CANCEL SAFETY NET ─── */
+// pointercancel fires when the browser or OS seizes the pointer stream
+// (system gesture, touch stolen by a native control, etc.).
+// We map these to our removeFinger path to prevent orphaned finger divs.
+// Note: we only handle this during collecting — other states ignore new touches anyway.
+$layer.addEventListener('pointercancel', e => {
+  if (STATE !== 'collecting') return;
+  // pointerType 'touch': map pointerId to a touch id only if we track it
+  // We use the pointerId as the key — different from touch identifier, but
+  // since we clear fingers on visibilitychange already, this is belt-and-suspenders.
+  removeFinger(e.pointerId);
+  if (STATE === 'collecting') {
+    updateCount();
+    if (fingers.size === 0) { stopTimer(); enterScreensaver(); } else resetTimer();
+  }
+});
+
+/* ── WINDOW BLUR SAFETY NET ─── */
+// On desktop: if the browser window loses focus while a mouse button is held,
+// mouseup never fires and the virtual finger stays stuck.
+window.addEventListener('blur', () => {
+  if (mDown) { mDown = false; removeFinger('mouse'); }
+  if (STATE === 'collecting' && fingers.size > 0) {
+    // Clear all live fingers — we can't trust touch state after focus loss
+    [...fingers.keys()].forEach(id => removeFinger(id));
+    if (fingers.size === 0) { stopTimer(); enterScreensaver(); }
   }
 });
 
