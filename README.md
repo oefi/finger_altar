@@ -9,7 +9,6 @@ Players place their fingers on a screen; one is chosen at random.
 
 - No install, no backend, works offline
 - One HTML file, zero dependencies
-- for smartphone/tablet/desktop browsers
 
 Demo:
 https://oefi.github.io/fingersweep/
